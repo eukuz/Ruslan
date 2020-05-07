@@ -78,7 +78,7 @@ namespace CountComments
 
             (int a, int b, int c, int d) tuple = ProceedSecond(input);
             Console.WriteLine($"{tuple.a} {tuple.b} {tuple.c} {tuple.d}");
-            Console.WriteLine();
+            Console.ReadKey();
         }
 
     }

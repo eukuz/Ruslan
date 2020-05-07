@@ -33,8 +33,8 @@ namespace ManyFields
                 });
             }
 
-            ProceedEntries(ref inputEntries, priorities, 0);
             Console.WriteLine();
+            ProceedEntries(ref inputEntries, priorities, 0);
         }
 
 
