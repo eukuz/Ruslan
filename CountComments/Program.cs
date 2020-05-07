@@ -8,7 +8,7 @@ namespace CountComments
 {
     class Program
     {
-        static string FillInputStr()
+        static string FillInputStr() // ввести данные
         {
             string input = "";
 
@@ -71,72 +71,6 @@ namespace CountComments
                 }
             }
             return tuple; 
-        }
-
-        void  oldProc()
-        {
-            //foreach (string line in input) //обработка
-            //{
-            //    if (needsCouple)
-            //    {
-            //        needsCouple = !line.Contains(searchFor);
-
-            //    }
-            //    else
-            //    {
-            //        for (int i = 0; i < line.Length; i++)
-            //        {
-            //            char cy = line[i];
-            //            //if (i< skipto) // если открытие комментария найдено, можно пропустить все вплоть до его закрытия
-            //            //{
-            //            //    continue;
-            //            //}
-
-            //            if (line[i].ToString() == "'")
-            //            {
-            //                needsCouple = true;
-            //                searchFor = "'";
-            //                literalStringCount++;
-            //            }
-            //            else if (line[i].ToString() == "{")
-            //            {
-            //                needsCouple = true;
-            //                searchFor = "}";
-            //                secondTypeCommentsCount++;
-            //            }
-            //            else if (line.Length - 1 >= i + 1)
-            //            {
-            //                if (line[i].ToString() + line[i + 1].ToString() == "(*")
-            //                {
-            //                    needsCouple = true;
-            //                    searchFor = "*)";
-            //                    firstTypeCommentsCount++;
-            //                }
-            //                else if (line[i].ToString() + line[i + 1].ToString() == "//")
-            //                {
-            //                    needsCouple = false;
-            //                    thirdTypeCommentsCount++;
-            //                    break;
-            //                }
-            //            }
-
-            //            if (searchFor.Length > 0)
-            //            {
-            //                if (!line.Contains(searchFor))
-            //                {
-            //                    break;
-            //                }
-            //                else
-            //                {
-            //                    i = line.IndexOf(searchFor);    // если открытие комментария найдено, можно пропустить все вплоть до его закрытия
-            //                    searchFor = "";
-            //                    needsCouple = false;
-            //                }
-            //            }
-            //        }
-            //    }
-            //}
-
         }
         static void Main(string[] args)
         {

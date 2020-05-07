@@ -1,122 +1,136 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Transactions;
 
 namespace ManyFields
 {
     class Program
     {
-        static Entry[] outEntries;
-        static int outIndex = 0;
         static void Main(string[] args)
         {
             int numberEntries = Convert.ToInt32(Console.ReadLine()); //N
             int numberParams = Convert.ToInt32(Console.ReadLine()); //k
             int[] priorities = Console.ReadLine().Split(' ').Select(x => int.Parse(x)).ToArray();
-            Entry[] inputEntries = new Entry[numberEntries];
-            for (int i = 0; i < numberEntries; i++)
+
+            for (int i = 0; i < priorities.Length; i++) // потому что в массивах счет с 0
+            {
+                priorities[i] -= 1;
+            }
+
+            List<Entry> inputEntries = new List<Entry>();
+            for (int i = 0; i < numberEntries; i++) // заполннение списка первичными записями 
             {
                 string input = Console.ReadLine();
                 string name = input.Substring(0, input.IndexOf(' '));
                 string ps = input.Substring(input.IndexOf(' ') + 1);
-                inputEntries[i] = new Entry
+                inputEntries.Add(new Entry
                 {
                     Name = name,
                     Params = ps.Split(' ').Select(x => int.Parse(x)).ToArray()
-                };
-            } // заполнить массив
-            Array.Sort
-            outEntries = new Entry[inputEntries.Length];
+                });
+            }
 
+            ProceedEntries(ref inputEntries, priorities, 0);
             Console.WriteLine();
-
         }
 
-        static void BiggerSort(ref Entry[] entries, int[] priors)
+
+        static void ProceedEntries(ref List<Entry> entries, int[] priors, int p) // рекурсивная функция ищет наибольшую по приоритету запись, выводит ее затем возвращается к тому что осталось
         {
-            for (int i = 0; i < entries.Length; i++)
+            while (entries.Count > 0)
             {
-                for (int j = 0; j < priors.Length; j++)
+                if (entries.Count == 1)
                 {
-                    int max = entries[0].Params[priors[j]];
-                    foreach (Entry entry in entries) //найти максимальный член данного проритета
+                    Console.WriteLine(entries[0].Name);
+                    break;
+                }
+
+                SortDueToPriority(ref entries, priors[p]);
+                int max = entries[0].Params[priors[p]];
+
+                if (entries.Where(a => a.Params[priors[p]] == max).Count() == 1) // если записей с макс приоритетом 1 шт.
+                {
+                    Console.WriteLine(entries.Where(a => a.Params[priors[p]] == max).FirstOrDefault().Name);
+                    entries.Remove(entries.Where(a => a.Params[priors[p]] == max).FirstOrDefault());
+                }
+                else
+                {
+                    List<Entry> selectedEntries = entries.Where(a => a.Params[priors[p]] == max).ToList();
+                    if (CheckIfParamsEquivalent(selectedEntries)) // если записи равны по параметрам вывести их
                     {
-                        if (entry.Params[priors[j]] > max)
+                        foreach (Entry entry in selectedEntries)
                         {
-                            max = entry.Params[priors[j]];
+                            Console.WriteLine(entry.Name);
                         }
                     }
+                    else // иначе обработать выделенные записи (рекурсия)
+                    {
+                        ProceedEntries(ref selectedEntries, priors, p + 1);
+                    }
 
+                    int index = entries.IndexOf(entries.Where(a => a.Params[priors[p]] == max).FirstOrDefault());
+                    int count = entries.Where(a => a.Params[priors[p]] == max).Count();
+                    entries.RemoveRange(index, count);
+                }
 
+                if (GetNumOfDiffParamsAtPrior(entries, p) == 1) // если в оставшихся записиях значения данного приоритетного параметра равны
+                {
+                    p++; //переходим к следующему приоритету в заданном порядке 
                 }
             }
         }
-        static void SortArray(ref Entry[] entries, int[] priors)
+
+        private static bool CheckIfParamsEquivalent(List<Entry> entries) // проверить равны ли все параметры у заданных записей
         {
-            Entry[] innerEntries = new Entry[entries.Length];
-            int index = 0;
-            int prior = 0;
-
-            for (int i = 0; i < entries.Length; i++)
+            int paramlenght = entries[0].Params.Length;
+            for (int i = 0; i < paramlenght; i++)
             {
-
-
-                Entry[] selectedEntries = entries.Where(a => a.Params[priors[prior]] == max).ToArray();
-                for (int j = 0; j < priors.Length; j++)
+                for (int j = 0; j < entries.Count - 1; j++)
                 {
-                    int max = entries[0].Params[priors[prior]];
-                    foreach (Entry entry in entries) //найти максимальный член данного проритета
+                    if (entries[j].Params[i] != entries[j + 1].Params[i])
                     {
-                        if (entry.Params[priors[prior]] > max)
-                        {
-                            max = entry.Params[priors[prior]];
-                        }
+                        return false;
                     }
+                }
+            }
+            return true;
+        }
 
-                    selectedEntries = selectedEntries.Where(a => a.Params[priors[j]] == max).ToArray();
-                    if (selectedEntries.Length == 1)
+        private static void SortDueToPriority(ref List<Entry> entries, int priority) //отсортировать записи по убыванию относительно выбранного приоритета
+        {
+            Entry temp;
+            for (int i = 0; i < entries.Count; i++)
+            {
+                for (int j = i; j < entries.Count; j++)
+                {
+                    if (entries[i].Params[priority] < entries[j].Params[priority])
                     {
-                        innerEntries[++index] = selectedEntries[0];
-                        break;
+                        temp = entries[i];
+                        entries[i] = entries[j];
+                        entries[j] = temp;
                     }
                 }
             }
         }
-        static Entry[] GetHigestEntry( Entry[] entries, int prior, int[] priors)
+
+        static int GetNumOfDiffParamsAtPrior(List<Entry> entries, int p) // получить число различающихся параметров на данном приоритете
         {
-            int max = entries[0].Params[prior];
+            List<int> diffParams = new List<int>();
             foreach (Entry entry in entries)
             {
-                if (entry.Params[prior] > max)
+                if (!diffParams.Contains(entry.Params[p]))
                 {
-                    max = entry.Params[prior];
+                    diffParams.Add(entry.Params[p]);
                 }
             }
-
-            int numOfMaxPriorEntries = 0;
-            foreach (Entry e in entries)
-            {
-                if (e.Params[prior] == max)
-                {
-                    numOfMaxPriorEntries++;
-                }
-            }
-
-            if (numOfMaxPriorEntries == 1)
-            {
-                outEntries[outIndex++] = entries.Where(a => a.Params[prior] == max).FirstOrDefault();
-                return null;
-            }
-            else
-            {
-                Entry[] selectedEntries = entries.Where(a => a.Params[prior] == max).ToArray();
-                GetHigestEntry(selectedEntries, ++prior, priors);
-                return selectedEntries;
-            }
+            return diffParams.Count;
         }
+
     }
-    class Entry
+    class Entry// класс для упаковки записи
     {
         public string Name { get; set; }
         public int[] Params { get; set; }

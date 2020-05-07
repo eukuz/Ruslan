@@ -10,7 +10,7 @@ namespace FileSort
         static string outPath = @"C:\Users\Eugene\Desktop\output.txt";
         static void Main(string[] args)
         {
-            File.WriteAllText(outPath, String.Empty); // clear Outputfile
+            File.WriteAllText(outPath, String.Empty); // очистить Outputfile
             int[] arrIds = new int[getNumberOfStrings()];
             FillArray(ref arrIds);
             Sort(ref arrIds);

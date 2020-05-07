@@ -28,7 +28,7 @@ namespace Dots
             Console.WriteLine(finalCount);
         }
 
-        static void SortItems1Ascending(ref List<(int, int)> dots)
+        static void SortItems1Ascending(ref List<(int, int)> dots) // отсортировать по возрастанию относительно расположения на прямой
         {
             (int, int) temp;
             for (int i = 0; i < dots.Count; i++)
@@ -44,7 +44,7 @@ namespace Dots
                 }
             }
         }
-        static void SortItems2Descending(ref List<(int,int)> dots)
+        static void SortItems2Descending(ref List<(int,int)> dots) // отсортировать по убыванию относительно количества ближайших точек
         {
             (int, int) temp;
             for (int i = 0; i < dots.Count; i++)
@@ -60,7 +60,7 @@ namespace Dots
                 }
             }
         }
-        static void Input(out int l, out int n, out List<(int, int)> dots)
+        static void Input(out int l, out int n, out List<(int, int)> dots) //обработать ввод
         {
             int[] LN = Console.ReadLine().Split(' ').Select(x => int.Parse(x)).ToArray();
             l = LN[0]*2;
@@ -79,7 +79,7 @@ namespace Dots
 
             SetNumsOfNearDots(ref dots, l);
         }
-        static void SetNumsOfNearDots(ref List<(int,int)> dots, int l)
+        static void SetNumsOfNearDots(ref List<(int,int)> dots, int l) //установить количество точек в зоне доступа
         {
             for (int i = 0; i < dots.Count; i++)
             {
